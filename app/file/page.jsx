@@ -95,7 +95,7 @@ const File = () => {
     
   
     useEffect(() => {
-      const newSocket = io('https://e196405d88bb0b.lhr.life', {
+      const newSocket = io('https://a2c2608d01995bd4530db60bf673a95c.serveo.net/', {
         transports: ['websocket']
       })
       // const newSocket = io('https://sixty-adults-feel.loca.lt', {
