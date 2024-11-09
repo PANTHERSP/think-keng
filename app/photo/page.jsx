@@ -279,6 +279,19 @@ const Photo = () => {
   const detectedVideoRef = useRef(null);
   const streamRef = useRef(null); // Reference for the media stream
 
+
+  let redBin = ['battery', 'mobile-phone', 'mouse', 'light-bulb', 'fluorescent-lamp', 'earphone', 'cable', 'spray']
+  let yellowBin = ['PET-plastic-bottle', 'PE-plastic-bag', 'broken-glass', 'metal-can', 'paper', 'taobin', 'transparent-plastic-bottle']
+  let greenBin = ['animal-waste', 'banana-peel', 'orange-peel']
+  let blueBin = ['snack-package', 'tissue-paper', 'foam']
+
+  let detectedRedBin = []
+  let detectedYellowBin = []
+  let detectedGreenBin = []
+  let detectedBlueBin = []
+
+  let detectedAllBin = []    
+
   // Define the stopCamera function outside useEffect
   const stopCamera = () => {
     if (streamRef.current) {

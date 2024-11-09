@@ -312,7 +312,7 @@ const Realtime = () => {
           const context = canvas.getContext('2d');
           context.drawImage(video, 0, 0, canvas.width, canvas.height);
           const frameData = canvas.toDataURL('image/jpeg');
-          if ((new Date()).getTime() - lastSentTime >= 500) {
+          if ((new Date()).getTime() - lastSentTime >= 300) {
             socket.emit('processed_frame', frameData);
             console.log("Sent frame to server");
             lastSentTime = (new Date()).getTime();
