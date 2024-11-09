@@ -292,7 +292,7 @@ const Photo = () => {
   };
 
   useEffect(() => {
-    const newSocket = io('https://ad7a26b8387a50.lhr.life', {
+    const newSocket = io('https://790f868d1b9414.lhr.life', {
       transports: ['websocket'],
     });
 
