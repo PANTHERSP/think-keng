@@ -232,7 +232,7 @@ const Realtime = () => {
   let detectedAllBin = [];
 
   useEffect(() => {
-    const newSocket = io('https://790f868d1b9414.lhr.life', {
+    const newSocket = io('https://e196405d88bb0b.lhr.life', {
       transports: ['websocket']
     });
 
