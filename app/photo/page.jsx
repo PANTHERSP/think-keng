@@ -301,6 +301,45 @@ const Photo = () => {
     newSocket.on('result_frame', (data) => {
       console.log("Received processed frame from server");
       console.log(data.labels);
+
+      for (let label of data.labels) {
+        if (redBin.includes(label)) {
+          detectedRedBin.push(label);
+          console.log("red bin");
+        }
+        if (yellowBin.includes(label)) {
+          detectedYellowBin.push(label);
+          console.log("yellow bin");
+        }
+        if (greenBin.includes(label)) {
+          detectedGreenBin.push(label);
+          console.log("green bin");
+        }
+        if (blueBin.includes(label)) {
+          detectedBlueBin.push(label);
+          console.log("blue bin");
+        }
+      }
+      
+      detectedRedBin = [...new Set(detectedRedBin)];
+      detectedYellowBin = [...new Set(detectedYellowBin)];
+      detectedGreenBin = [...new Set(detectedGreenBin)];
+      detectedBlueBin = [...new Set(detectedBlueBin)];
+
+      detectedAllBin = [
+        { binColor: 'red', binList: [...detectedRedBin] },
+        { binColor: 'yellow', binList: [...detectedYellowBin] },
+        { binColor: 'green', binList: [...detectedGreenBin] },
+        { binColor: 'blue', binList: [...detectedBlueBin] }
+      ];
+
+      setMapAllBin(detectedAllBin);
+      detectedAllBin = [];
+      detectedRedBin = [];
+      detectedYellowBin = [];
+      detectedGreenBin = [];
+      detectedBlueBin = [];
+      setLabels(data.labels);
       
       setVideoSrc(true);
       detectedVideoRef.current.src = 'data:image/jpeg;base64,' + data.frame;
@@ -349,14 +388,19 @@ const Photo = () => {
   }, [socket]);
 
   const handleTakePhoto = () => {
-    setIsTakePhoto(!isTakePhoto);
-
+    
     if (!isTakePhoto) {
       socket.emit('processed_frame', videoRef.current.src);
       console.log("Sent frame to server:", videoRef.current.src);
     } else {
       setMapAllBin(null);
+      detectedAllBin = [];
+      detectedRedBin = [];
+      detectedYellowBin = [];
+      detectedGreenBin = [];
+      detectedBlueBin = [];
     }
+    setIsTakePhoto(!isTakePhoto);
   };
 
   return (
