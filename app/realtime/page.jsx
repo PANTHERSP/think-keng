@@ -233,9 +233,11 @@ const Realtime = () => {
 
   useEffect(() => {
     const newSocket = io('https://a2c2608d01995bd4530db60bf673a95c.serveo.net/', {
-      transports: ['websocket']
+      transports: ['websocket'],
+      autoConnect: false
     });
 
+    newSocket.connect()
     setSocket(newSocket);
     
     newSocket.on('result_frame', (data) => {
@@ -287,7 +289,9 @@ const Realtime = () => {
     });
 
     return () => {
+      newSocket.off('result_frame');
       newSocket.disconnect();
+      setSocket(null);
     };
   }, []);
 
@@ -362,4 +366,303 @@ const Realtime = () => {
 };
 
 export default Realtime;
+
+
+// 'use client';
+
+// import React, { useEffect, useState, useRef } from 'react';
+// import { io } from 'socket.io-client';
+// import { HiMiniVideoCamera } from "react-icons/hi2";
+// import { motion } from 'framer-motion';
+// import BackButton from '../components/BackButton';
+
+// const MotionHiMiniVideoCamera = motion(HiMiniVideoCamera);
+
+// const Realtime = () => {
+//   const [videoSrc, setVideoSrc] = useState(null);
+//   const [labels, setLabels] = useState(null);
+//   const [mapAllBin, setMapAllBin] = useState(null);
+
+//   const socketRef = useRef(null); // ใช้ useRef สำหรับ socket
+//   const videoRef = useRef(null);
+//   const videoStreamRef = useRef(null); // Reference for the video stream
+
+//   const redBin = ['battery', 'mobile-phone', 'mouse', 'light-bulb', 'fluorescent-lamp', 'earphone', 'cable', 'spray'];
+//   const yellowBin = ['PET-plastic-bottle', 'PE-plastic-bag', 'broken-glass', 'metal-can', 'paper', 'taobin', 'transparent-plastic-bottle'];
+//   const greenBin = ['animal-waste', 'banana-peel', 'orange-peel'];
+//   const blueBin = ['snack-package', 'tissue-paper', 'foam'];
+
+//   useEffect(() => {
+//     // สร้าง socket instance
+//     socketRef.current = io('https://a2c2608d01995bd4530db60bf673a95c.serveo.net/', {
+//       transports: ['websocket'],
+//       autoConnect: false
+//     });
+
+//     socketRef.current.connect();
+
+//     socketRef.current.on('result_frame', (data) => {
+//       console.log("Received processed frame from server");
+//       const detectedRedBin = [];
+//       const detectedYellowBin = [];
+//       const detectedGreenBin = [];
+//       const detectedBlueBin = [];
+
+//       data.labels.forEach(label => {
+//         if (redBin.includes(label)) detectedRedBin.push(label);
+//         if (yellowBin.includes(label)) detectedYellowBin.push(label);
+//         if (greenBin.includes(label)) detectedGreenBin.push(label);
+//         if (blueBin.includes(label)) detectedBlueBin.push(label);
+//       });
+
+//       const detectedAllBin = [
+//         { binColor: 'red', binList: [...new Set(detectedRedBin)] },
+//         { binColor: 'yellow', binList: [...new Set(detectedYellowBin)] },
+//         { binColor: 'green', binList: [...new Set(detectedGreenBin)] },
+//         { binColor: 'blue', binList: [...new Set(detectedBlueBin)] }
+//       ];
+
+//       setMapAllBin(detectedAllBin);
+//       setLabels(data.labels);
+//       setVideoSrc(true);
+//       if (videoRef.current) {
+//         videoRef.current.src = 'data:image/jpeg;base64,' + data.frame;
+//       }
+//     });
+
+//     return () => {
+//       if (socketRef.current) {
+//         socketRef.current.off('result_frame');
+//         socketRef.current.disconnect();
+//         socketRef.current = null;
+//       }
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     if (socketRef.current) {
+//       const video = document.createElement('video');
+//       let lastSentTime = 0;
+
+//       navigator.mediaDevices.getUserMedia({ video: {
+//         facingMode: navigator.userAgent.match(/(iPhone|iPad|Android)/i)
+//           ? { ideal: "environment" }
+//           : "user"
+//       }}).then((stream) => {
+//         video.srcObject = stream;
+//         video.play();
+//         videoStreamRef.current = stream;
+
+//         const captureFrame = () => {
+//           const canvas = document.createElement('canvas');
+//           canvas.width = video.videoWidth;
+//           canvas.height = video.videoHeight;
+//           const context = canvas.getContext('2d');
+//           context.drawImage(video, 0, 0, canvas.width, canvas.height);
+//           const frameData = canvas.toDataURL('image/jpeg');
+//           if ((new Date()).getTime() - lastSentTime >= 300) {
+//             socketRef.current.emit('processed_frame', frameData);
+//             lastSentTime = (new Date()).getTime();
+//           }
+//           requestAnimationFrame(captureFrame);
+//         };
+
+//         video.onloadedmetadata = () => {
+//           captureFrame();
+//         };
+//       });
+//     }
+
+//     return () => {
+//       if (videoStreamRef.current) {
+//         videoStreamRef.current.getTracks().forEach(track => track.stop());
+//       }
+//     };
+//   }, []);
+
+//   return (
+//     <div className="container">
+//       <BackButton />
+//       <h1 className="title">Realtime Detect</h1>
+//       {!videoSrc ? <img className="video-frame-image" src="https://i.pinimg.com/originals/b6/f1/6b/b6f16bbbd9a0b09458a6e60f2c4342a9.gif" alt="Video Stream" /> : <img style={{ scale: '0.7', transform: 'translateY(-20%)', transition: 'all 0.3s ease-in-out' }} className="video-frame-image" ref={videoRef} src={null} alt="Video Stream" />}
+//       {!videoSrc ? <MotionHiMiniVideoCamera whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} size={30} className="icon" /> : <MotionHiMiniVideoCamera initial={{ y: 0 }} animate={{ y: [0, -85] }} transition={{ duration: 0.3 }} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} size={30} className="icon" />}
+//       {!videoSrc && <img style={{ marginTop: '25px',height: '175px', aspectRatio: '1/1' }} src="https://cdn.pixabay.com/animation/2022/10/11/03/16/03-16-39-160_512.gif" />}
+//       <motion.div initial={{ y: 0 }} animate={{ y: [0, -85] }} transition={{ duration: 0.3 }} style={{ backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', gap: '0px', marginTop: '10px' }}>
+//         {mapAllBin && mapAllBin.map((allBinLabel, index1) => (
+//           <div key={index1} style={{ backgroundColor: 'transparent', alignItems: 'center', height: allBinLabel.binList.length > 0 ? '70px' : '0px', display: 'flex', flexDirection: 'row', gap: allBinLabel.binList.length > 0 ? '10px' : '0px', marginBottom: allBinLabel.binList.length > 0 ? '10px' : '0px' }}>
+//             { allBinLabel.binList.length > 0 && <motion.img transition={{ scale: { duration: 0.2, whileHover: 0.2 } }} initial={{ opacity: 0, x: -20, y: 20 }} animate={{ opacity: 1, x: 0, y: 0 }} whileHover={{ scale: 1.1 }} style={{ height: '70px', aspectRatio: '1/1' }} src={`/images/${allBinLabel.binColor}.png`} />}
+//             { allBinLabel.binList.length > 0 && allBinLabel.binList.map((label, index2) => (
+//               <motion.div transition={{ scale: { duration: 0.2, whileHover: 0.2 } }} initial={{ opacity: 0, x: -20, y: 20 }} animate={{ opacity: 1, x: 0, y: 0 }} whileHover={{ scale: 1.1 }} key={index2} style={{ height: '40px', fontSize: '16px', fontWeight: '400', display: 'flex', flexDirection: 'row', alignItems: 'center', color: yellowBin.includes(label) ? 'black' : 'white', paddingBlock: '0px', paddingInline: '12px', borderRadius: '100px', backgroundColor: redBin.includes(label) ? 'red' : yellowBin.includes(label) ? 'yellow' : greenBin.includes(label) ? 'green' : blueBin.includes(label) ? 'blue' : 'white' }}>
+//                 {label}
+//               </motion.div>
+//             ))}
+//           </div>
+//         ))}
+//       </motion.div>
+//       <p className="footer">Copyright &copy; 2024 by <a className="remove-underline" href="https://www.think-keng.com">Think-keng</a></p>
+//     </div>
+//   );
+// };
+
+// export default Realtime;
+
+
+
+// 'use client';
+
+// import React, { useEffect, useState, useRef } from 'react';
+// import { io } from 'socket.io-client';
+// import { HiMiniVideoCamera } from "react-icons/hi2";
+// import { motion } from 'framer-motion';
+// import BackButton from '../components/BackButton';
+
+// const MotionHiMiniVideoCamera = motion(HiMiniVideoCamera);
+
+// const Realtime = () => {
+//   const [videoSrc, setVideoSrc] = useState(null);
+//   const [labels, setLabels] = useState(null);
+//   const [mapAllBin, setMapAllBin] = useState(null);
+
+//   const socketRef = useRef(null); // ใช้ useRef สำหรับ socket
+//   const videoRef = useRef(null);
+//   const videoStreamRef = useRef(null); // Reference for the video stream
+
+//   const redBin = ['battery', 'mobile-phone', 'mouse', 'light-bulb', 'fluorescent-lamp', 'earphone', 'cable', 'spray'];
+//   const yellowBin = ['PET-plastic-bottle', 'PE-plastic-bag', 'broken-glass', 'metal-can', 'paper', 'taobin', 'transparent-plastic-bottle'];
+//   const greenBin = ['animal-waste', 'banana-peel', 'orange-peel'];
+//   const blueBin = ['snack-package', 'tissue-paper', 'foam'];
+
+//   useEffect(() => {
+//     // สร้าง socket instance
+//     socketRef.current = io('https://a2c2608d01995bd4530db60bf673a95c.serveo.net/', {
+//       transports: ['websocket'],
+//       autoConnect: false
+//     });
+
+//     socketRef.current.connect();
+
+//     socketRef.current.on('result_frame', (data) => {
+//       console.log("Received processed frame from server");
+//       console.log(data.labels);
+
+//       const detectedRedBin = [];
+//       const detectedYellowBin = [];
+//       const detectedGreenBin = [];
+//       const detectedBlueBin = [];
+
+//       data.labels.forEach(label => {
+//         if (redBin.includes(label)) {
+//           detectedRedBin.push(label);
+//           console.log("red bin");
+//         }
+//         if (yellowBin.includes(label)) {
+//           detectedYellowBin.push(label);
+//           console.log("yellow bin");
+//         }
+//         if (greenBin.includes(label)) {
+//           detectedGreenBin.push(label);
+//           console.log("green bin");
+//         }
+//         if (blueBin.includes(label)) {
+//           detectedBlueBin.push(label);
+//           console.log("blue bin");
+//         }
+//       });
+
+//       const detectedAllBin = [
+//         { binColor: 'red', binList: [...new Set(detectedRedBin)] },
+//         { binColor: 'yellow', binList: [...new Set(detectedYellowBin)] },
+//         { binColor: 'green', binList: [...new Set(detectedGreenBin)] },
+//         { binColor: 'blue', binList: [...new Set(detectedBlueBin)] }
+//       ];
+
+//       setMapAllBin(detectedAllBin);
+//       setLabels(data.labels);
+//       setVideoSrc(true);
+
+//       if (videoRef.current) {
+//         videoRef.current.src = 'data:image/jpeg;base64,' + data.frame;
+//       }
+//     });
+
+//     return () => {
+//       if (socketRef.current) {
+//         socketRef.current.off('result_frame');
+//         socketRef.current.disconnect();
+//         socketRef.current = null;
+//       }
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     if (socketRef.current) {
+//       const video = document.createElement('video');
+//       let lastSentTime = 0;
+
+//       navigator.mediaDevices.getUserMedia({ video: {
+//         facingMode: navigator.userAgent.match(/(iPhone|iPad|Android)/i)
+//           ? { ideal: "environment" }
+//           : "user"
+//       }}).then((stream) => {
+//         video.srcObject = stream;
+//         video.play();
+//         videoStreamRef.current = stream;
+
+//         const captureFrame = () => {
+//           const canvas = document.createElement('canvas');
+//           canvas.width = video.videoWidth;
+//           canvas.height = video.videoHeight;
+//           const context = canvas.getContext('2d');
+//           context.drawImage(video, 0, 0, canvas.width, canvas.height);
+//           const frameData = canvas.toDataURL('image/jpeg');
+//           if ((new Date()).getTime() - lastSentTime >= 300) {
+//             socketRef.current.emit('processed_frame', frameData);
+//             console.log("Sent frame to server");
+//             lastSentTime = (new Date()).getTime();
+//           }
+//           requestAnimationFrame(captureFrame);
+//         };
+
+//         video.onloadedmetadata = () => {
+//           console.log("Video metadata loaded");
+//           captureFrame();
+//         };
+//       });
+//     }
+
+//     return () => {
+//       if (videoStreamRef.current) {
+//         videoStreamRef.current.getTracks().forEach(track => track.stop());
+//         console.log("Video stream stopped");
+//       }
+//     };
+//   }, []);
+
+//   return (
+//     <div className="container">
+//       <BackButton />
+//       <h1 className="title">Realtime Detect</h1>
+//       {!videoSrc ? <img className="video-frame-image" src="https://i.pinimg.com/originals/b6/f1/6b/b6f16bbbd9a0b09458a6e60f2c4342a9.gif" alt="Video Stream" /> : <img style={{ scale: '0.7', transform: 'translateY(-20%)', transition: 'all 0.3s ease-in-out' }} className="video-frame-image" ref={videoRef} src={null} alt="Video Stream" />}
+//       {!videoSrc ? <MotionHiMiniVideoCamera whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} size={30} className="icon" /> : <MotionHiMiniVideoCamera initial={{ y: 0 }} animate={{ y: [0, -85] }} transition={{ duration: 0.3 }} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} size={30} className="icon" />}
+//       {!videoSrc && <img style={{ marginTop: '25px', height: '175px', aspectRatio: '1/1' }} src="https://cdn.pixabay.com/animation/2022/10/11/03/16/03-16-39-160_512.gif" />}
+//       <motion.div initial={{ y: 0 }} animate={{ y: [0, -85] }} transition={{ duration: 0.3 }} style={{ backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', gap: '0px', marginTop: '10px' }}>
+//         {mapAllBin && mapAllBin.map((allBinLabel, index1) => (
+//           <div key={index1} style={{ backgroundColor: 'transparent', alignItems: 'center', height: allBinLabel.binList.length > 0 ? '70px' : '0px', display: 'flex', flexDirection: 'row', gap: allBinLabel.binList.length > 0 ? '10px' : '0px', marginBottom: allBinLabel.binList.length > 0 ? '10px' : '0px' }}>
+//             { allBinLabel.binList.length > 0 && <motion.img transition={{ scale: { duration: 0.2, whileHover: 0.2 } }} initial={{ opacity: 0, x: -20, y: 20 }} animate={{ opacity: 1, x: 0, y: 0 }} whileHover={{ scale: 1.1 }} style={{ height: '70px', aspectRatio: '1/1' }} src={`/images/${allBinLabel.binColor}.png`} />}
+//             { allBinLabel.binList.length > 0 && allBinLabel.binList.map((label, index2) => (
+//               <motion.div transition={{ scale: { duration: 0.2, whileHover: 0.2 } }} initial={{ opacity: 0, x: -20, y: 20 }} animate={{ opacity: 1, x: 0, y: 0 }} whileHover={{ scale: 1.1 }} key={index2} style={{ height: '40px', fontSize: '16px', fontWeight: '400', display: 'flex', flexDirection: 'row', alignItems: 'center', color: yellowBin.includes(label) ? 'black' : 'white', paddingBlock: '0px', paddingInline: '12px', borderRadius: '100px', backgroundColor: redBin.includes(label) ? 'red' : yellowBin.includes(label) ? 'yellow' : greenBin.includes(label) ? 'green' : blueBin.includes(label) ? 'blue' : 'white' }}>
+//                 {label}
+//               </motion.div>
+//             ))}
+//           </div>
+//         ))}
+//       </motion.div>
+//       <p className="footer">Copyright &copy; 2024 by <a className="remove-underline" href="https://www.think-keng.com">Think-keng</a></p>
+//     </div>
+//   );
+// };
+
+// export default Realtime;
+
+
 
