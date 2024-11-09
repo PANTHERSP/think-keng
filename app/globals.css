@@ -1,0 +1,162 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.container {
+  /* min-height: 100vh; */
+  /* padding: 0px; */
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  background: linear-gradient(45deg, rgba(34, 34, 231, 0.15), rgba(19, 225, 98, 0.15), rgba(230, 233, 12, 0.15), rgba(240, 17, 17, 0.15));
+  width: 100vw;
+  height: 100vh;
+  
+}
+
+.description {
+  color: rgb(0, 0, 0);
+  font-size: 1.3rem;
+  margin-top: 40px;
+  font-weight: 400;
+  text-align: center;
+  width: 90%;
+  font-weight: 500;
+  font-style: italic;
+  /* max-width: 80%; */
+  /* margin-inline: auto; */
+}
+
+.footer {
+  position: absolute;
+  left: center;
+  bottom: 0;
+  /* width: 100%; */
+  color: rgb(0, 0, 0);
+  text-align: center;
+  font-size: 1.05rem;
+  /* margin-top: 50px; */
+  padding: 10px;
+  /* text-decoration-line: none; */
+  /* font-weight: 400; */
+}
+
+.icon {
+  color: rgb(255, 255, 255);
+  background: linear-gradient(45deg, rgb(4, 26, 68), rgb(13, 160, 111));
+  border-radius: 50%;
+  padding: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  /* aspect-ratio: 1/1; */
+  min-width: 30px;
+  min-height: 30px;
+  /* border: 0px solid rgba(0, 0, 0, 0.0); */
+}
+
+.link {
+  color: rgb(255, 255, 255);
+  font-size: 1.1rem;
+  /* margin-top: 50px; */
+  padding: 10px;
+  /* margin-inline: 20px; */
+  margin-top: 20px;
+  /* font-weight: 400; */
+  text-decoration: none;
+  /* border: 1px solid rgb(0, 0, 0); */
+  border-radius: 15px;
+  background: linear-gradient(45deg, rgb(4, 26, 68), rgb(13, 160, 111));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-inline: 12px;
+  margin-bottom: 5px
+  ;
+  /* transition: all 0.2s ease-in-out; */
+}
+
+.links {
+  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  /* gap: 15px; */
+  /* margin-inline: 15px; */
+  flex-wrap: wrap;
+  /* width: 90%; */
+  /* background-color: aqua; */
+}
+
+
+.loading-message {
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  margin-top: 50px;
+  font-weight: 400;
+}
+
+.remove-underline {
+  text-decoration: none;
+}
+
+.title {
+  color: rgb(0, 0, 0);
+  font-size: 2.8rem;
+  /* margin-block: 15px; */
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  text-align: center;
+}
+
+.title-blue {
+  color: rgb(24, 100, 206);
+}
+
+.title-green {
+  color: rgb(14, 182, 78);
+}
+
+.title-red {
+  color: rgb(234, 42, 42);
+}
+
+.title-yellow {
+  color: rgb(206, 163, 7);
+}
+
+.video-frame {
+  /* border: 3px solid rgb(0, 0, 0); */
+  border-radius: 20px;
+  background: linear-gradient(45deg, rgba(34, 34, 231, 0.5), rgba(19, 225, 98, 0.5)), url('https://st3.depositphotos.com/17828278/33150/v/450/depositphotos_331503262-stock-illustration-no-image-vector-symbol-missing.jpg');
+  /* width: 100%; */
+  height: 40%;
+  /* max-width: 70%; */
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.video-frame-image {
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 20px;
+  /* width: 100%; */
+  height: 40%;
+  /* max-width: 70%; */
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
